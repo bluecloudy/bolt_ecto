@@ -38,13 +38,10 @@ defmodule Bolt.Ecto.Adapter do
   # READ
   def prepare(cmd, query) do
     cypher = apply(Bolt.Ecto.Query, cmd, [query])
-    # IO.inspect(cypher)
     {:nocache, {cypher, query}}
   end
 
   def execute(_repo, _query_meta, {:nocache, {cypher, query}}, params, _process) do
-    # IO.inspect(query_params(params))
-
     BoltSips.query(BoltSips.conn(), cypher, query_params(params))
     |> process_result(fn val -> mapper(val, query) end)
   end
@@ -53,6 +50,8 @@ defmodule Bolt.Ecto.Adapter do
     BoltSips.query(BoltSips.conn(), cypher, query_params(params))
     |> process_result(fn val -> mapper(val, query) end)
   end
+
+  defp process_result({:ok, %{stats: _stats}}, _mapper), do: :ok
 
   defp process_result({:ok, result}, mapper), do: decode_map(result, mapper)
 
