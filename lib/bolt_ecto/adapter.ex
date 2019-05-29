@@ -207,6 +207,8 @@ defmodule Bolt.Ecto.Adapter do
     do: decode_map(data, mapper, {cnt + 1, [mapper.(row) | decoded]})
 
   defp decode_map([], _, decoded), do: decoded
+  
+  defp decode_map(nil, _, decoded), do: decoded
 
   defp mapper(row, query) do
     cols = result_columns(query)
